@@ -1,0 +1,363 @@
+/* Added: Jan 15 Dom, 2012 */
+
+html {  
+        background: url(../imagens/background/01.jpg); 
+} 
+body { 
+        background: url(../imagens/background/01.jpg) repeat; 
+        margin-left: 0px; 
+        margin-top: 10px; 
+        margin-right:0px; 
+        margin-bottom:30px; 
+        overflow-x: hidden; 
+        overflow-y: hiddenx; 
+        scrolling:yes;
+}
+
+
+#alinha_blocoGeral {
+
+position:  relative;
+
+  
+width: 962px; 
+  
+margin:0 auto;           
+
+text-align:center; /* "remédio" para o hack do IE */   
+
+
+}
+
+
+
+
+
+#blocoGeral {
+float:center;
+ width:960px;
+padding:0pt 0pt 0pt 0pt;
+ background: url(http://www.accaia.org/imagens/background/back2x.jpg) #000000 repeat-x;*/	
+z-index:0;
+
+border:solid #FFFF00 0.0pt;
+
+
+}
+
+
+
+#flashBanerTopo {
+margin: 0 auto;
+background: url(index.css) #000000 repeat;
+ width:960px;
+height: 218px;
+border:solid #000000 0.0pt;
+padding:0pt 0pt 0pt0pt;
+}
+
+#bloco1 {
+float:left;
+background:#fafafa;
+ width:960px;
+
+padding:0pt 0pt 0pt 0pt;
+margin: 0 auto;
+border:solid #000000 0.0pt;
+height 280px;
+}
+
+
+#barraData {
+float:left;
+margin: 0 auto;
+background: url(http://www.riofox.net/biblioteca/background/jpg/barraestampa2.jpgx) #000000 repeat;
+ width:100%;
+height:20px;
+border:solid #20B2AA 0.0pt;
+text-align: center;
+text-valign: center;
+padding:0pt 0pt 0pt 0pt;
+font-size:0.895em;
+color:#CD853F;
+font-family: Trebuchet MS;
+}
+
+#coluna1 {
+float : left; 
+width :162px; 
+margin-top:0.60em;
+margin-left:0.20em;
+background:#fafafa;
+border: 0px dashed #000000;
+ padding:0pt 0pt 0pt ;
+text-align: left;
+text-valign:  left;
+
+
+}
+
+#conteudo_coluna1{
+
+
+text-valign: center;
+text-align: center 
+padding:0pt 0pt 0pt 0pt;
+font-size:0.895em;
+color:#666666;
+margin-top:-1.20em;
+margin-left:0.50em;
+
+}
+
+
+#coluna2 {
+float : left; width :580px;
+background:#fafafa;
+border: 0px dashed #000000; 
+padding:0pt 0pt 0pt;
+margin-top:0.60em;
+margin-left:0.20em;
+
+}
+
+
+
+#conteudo_coluna2{
+padding:0pt 0pt 0pt 0pt;
+font-size:0.895em;
+color:#666666;
+margin-top:0.5em;
+margin-left:0.00em;
+
+background:#fafafa;
+}
+
+
+#coluna3 {
+float : left; 
+width :200px; 
+color:#cccccc; 
+background:#fafafa;
+border: 0px dashed #000000;
+ padding:0pt 0pt 0pt ;
+margin-top:0.60em;
+margin-left:0.20em;
+
+
+}
+
+
+
+#conteudo_coluna3{
+
+height: 100px;
+text-valign: center;
+text-align: center 
+padding:0pt 0pt 0pt 0pt;
+font-size:0.895em;
+color:#666666;
+margin-top:-2.00em;
+margin-left:0.00em;
+
+}
+
+
+#sizeTexto{
+text-align:right;
+text-valign:right;
+font-size:0.895em;
+background:#CD3700;
+
+
+}
+
+
+
+
+
+
+#rodape{
+
+background: url(http://www.accaia.org/imagens/background/back2x.jpg) #fafafa repeat;
+
+float : left; 
+width :960px; 
+margin-top:0.0em;
+margin-left:0.0em;
+border: 0px dashed #000000;
+ padding:0pt 0pt 0pt  0pt;
+
+border-top: 1px solid #cccccc;
+
+}
+
+
+
+#rodape_riofox{
+background: url(../imagens/background/layermo_bg.jpg) #fafafa repeat;
+
+float : left; 
+width :100%; 
+margin-top:0.0em;
+margin-left:0.0em;
+border: 0px dashed #000000;
+ padding:0pt 0pt 0pt  0pt;
+border-top: 0px solid #cccccc;
+
+}
+
+
+
+
+/* PARA O barrasize  */
+
+a.barrasize:link {
+color:#ffffff;
+text-decoration:none;
+font-size:0.9em;
+margin: 2px;
+}
+a.barrasize:visited {
+color:#ffffff;
+text-decoration:none;
+font-size:0.9em;
+margin: 2px;
+}
+a.barrasize:hover {
+color:#cccccc;
+text-decoration:none;
+font-size:0.9em;
+margin: 2px;
+}
+a.barrasize:active {
+color:#ffffff;
+text-decoration:none;
+font-size:0.9em;
+margin: 2px;
+}
+
+
+
+
+/* PARA O itensPrincipais do menu */
+
+a.itensPrincipais:link {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold;  
+font-family:tahoma;
+}
+a.itensPrincipais:visited {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold;
+font-family:tahoma;  
+}
+a.itensPrincipais:hover {
+color:#FF6347;
+text-decoration:underline;
+font-size:0.850em;
+margin: 2px;
+font-weight:bold;
+font-family:tahoma;  
+}
+a.itensPrincipais:active {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold ; 
+font-family:tahoma; 
+}
+
+
+
+/* PARA O subitens do menu */
+
+a.subitens:link {
+color:#696969;
+text-decoration:none;
+font-size:0.800em;
+margin-left:0.50em;
+font-family:tahoma;
+}
+a.subitens:visited {
+color:#828282;
+text-decoration:none;
+font-size:0.800em;
+margin-left:0.50em;
+font-family:tahoma;
+}
+a.subitens:hover {
+color:#696969;
+text-decoration:underline;
+font-size:0.900em;
+margin-left:0.50em;
+font-family:tahoma;
+font-family:tahoma;
+}
+a.subitens:active {
+color:#696969;
+text-decoration:none;
+font-size:0.800em;
+margin-left:0.50em;
+font-family:tahoma;
+}
+
+
+.icone_sub {
+margin-left:1.20em;
+}
+
+
+
+
+/* PARA lk geral */
+
+a.link {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold;  
+font-family:tahoma;
+}
+a.visited {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold;
+font-family:tahoma;  
+}
+a.hover {
+color:#FF6347;
+text-decoration:underline;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold;
+font-family:tahoma;  
+}
+a.active {
+color:#CD2626;
+text-decoration:none;
+font-size:0.800em;
+margin: 2px;
+font-weight:bold ; 
+font-family:tahoma; 
+}
+
+
+
+
+</style>
+
+
+
+
+
