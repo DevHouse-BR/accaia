@@ -106,6 +106,8 @@ class Featured_Content {
 		add_action( 'switch_theme',                       array( __CLASS__, 'switch_theme'       )    );
 		add_action( 'switch_theme',                       array( __CLASS__, 'delete_transient'   )    );
 		add_action( 'wp_loaded',                          array( __CLASS__, 'wp_loaded'          )    );
+		add_action( 'split_shared_term',                  array( __CLASS__, 'jetpack_update_featured_content_for_split_terms', 10, 4 ) );
+
 
 		if ( isset( $theme_support[0]['additional_post_types'] ) ) {
 			$theme_support[0]['post_types'] = array_merge( array( 'post' ), (array) $theme_support[0]['additional_post_types'] );
@@ -179,7 +181,19 @@ class Featured_Content {
 		// Return array of cached results if they exist.
 		$featured_ids = get_transient( 'featured_content_ids' );
 		if ( ! empty( $featured_ids ) ) {
-			return array_map( 'absint', apply_filters( 'featured_content_post_ids', (array) $featured_ids ) );
+			return array_map(
+				'absint',
+				/**
+				 * Filter the list of Featured Posts IDs.
+				 *
+				 * @module theme-tools
+				 *
+				 * @since 2.7.0
+				 *
+				 * @param array $featured_ids Array of post IDs.
+				 */
+				apply_filters( 'featured_content_post_ids', (array) $featured_ids )
+			);
 		}
 
 		$settings = self::get_setting();
@@ -192,6 +206,7 @@ class Featured_Content {
 		if ( $term ) {
 			$tag = $term->term_id;
 		} else {
+			/** This action is documented in modules/theme-tools/featured-content.php */
 			return apply_filters( 'featured_content_post_ids', array() );
 		}
 
@@ -212,8 +227,10 @@ class Featured_Content {
 		) );
 
 		// Return empty array if no featured content exists.
-		if ( ! $featured )
+		if ( ! $featured ) {
+			/** This action is documented in modules/theme-tools/featured-content.php */
 			return apply_filters( 'featured_content_post_ids', array() );
+		}
 
 		// Ensure correct format before save/return.
 		$featured_ids = wp_list_pluck( (array) $featured, 'ID' );
@@ -221,6 +238,7 @@ class Featured_Content {
 
 		set_transient( 'featured_content_ids', $featured_ids );
 
+		/** This action is documented in modules/theme-tools/featured-content.php */
 		return apply_filters( 'featured_content_post_ids', $featured_ids );
 	}
 
@@ -235,13 +253,15 @@ class Featured_Content {
 	}
 
 	/**
-	 * Exclude featured posts from the blog query when the blog is the front-page.
+	 * Exclude featured posts from the blog query when the blog is the front-page,
+	 * and user has not checked the "Display tag content in all listings" checkbox.
 	 *
 	 * Filter the home page posts, and remove any featured post ID's from it.
 	 * Hooked onto the 'pre_get_posts' action, this changes the parameters of the
 	 * query before it gets any posts.
 	 *
 	 * @uses Featured_Content::get_featured_post_ids();
+	 * @uses Featured_Content::get_setting();
 	 * @param WP_Query $query
 	 * @return WP_Query Possibly modified WP_Query
 	 */
@@ -252,10 +272,8 @@ class Featured_Content {
 			return;
 		}
 
-		$page_on_front = get_option( 'page_on_front' );
-
 		// Bail if the blog page is not the front page.
-		if ( ! empty( $page_on_front ) ) {
+		if ( 'posts' !== get_option( 'show_on_front' ) ) {
 			return;
 		}
 
@@ -263,6 +281,13 @@ class Featured_Content {
 
 		// Bail if no featured posts.
 		if ( ! $featured ) {
+			return;
+		}
+
+		$settings = self::get_setting();
+
+		// Bail if the user wants featured posts always displayed.
+		if ( true == $settings['show-all'] ) {
 			return;
 		}
 
@@ -404,7 +429,7 @@ class Featured_Content {
 	 */
 	public static function register_setting() {
 		add_settings_field( 'featured-content', __( 'Featured Content', 'jetpack' ), array( __class__, 'render_form' ), 'reading' );
-		
+
 		// Register sanitization callback for the Customizer.
 		register_setting( 'featured-content', 'featured-content', array( __class__, 'validate_settings' ) );
 	}
@@ -436,6 +461,11 @@ class Featured_Content {
 			'type'                 => 'option',
 			'sanitize_js_callback' => array( __CLASS__, 'delete_transient' ),
 		) );
+		$wp_customize->add_setting( 'featured-content[show-all]', array(
+			'default'              => false,
+			'type'                 => 'option',
+			'sanitize_js_callback' => array( __CLASS__, 'delete_transient' ),
+		) );
 
 		// Add Featured Content controls.
 		$wp_customize->add_control( 'featured-content[tag-name]', array(
@@ -450,6 +480,13 @@ class Featured_Content {
 			'theme_supports' => 'featured-content',
 			'type'           => 'checkbox',
 			'priority'       => 30,
+		) );
+		$wp_customize->add_control( 'featured-content[show-all]', array(
+			'label'          => __( 'Display tag content in all listings.', 'jetpack' ),
+			'section'        => 'featured_content',
+			'theme_supports' => 'featured-content',
+			'type'           => 'checkbox',
+			'priority'       => 40,
 		) );
 	}
 
@@ -483,10 +520,27 @@ class Featured_Content {
 	public static function get_setting( $key = 'all' ) {
 		$saved = (array) get_option( 'featured-content' );
 
+		/**
+		 * Filter Featured Content's default settings.
+		 *
+		 * @module theme-tools
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array $args {
+		 * Array of Featured Content Settings
+		 *
+		 * 	@type int hide-tag Default is 1.
+		 * 	@type int tag-id Default is 0.
+		 * 	@type string tag-name Default is empty.
+		 * 	@type int show-all Default is 0.
+		 * }
+		 */
 		$defaults = apply_filters( 'featured_content_default_settings', array(
 			'hide-tag' => 1,
 			'tag-id'   => 0,
 			'tag-name' => '',
+			'show-all' => 0,
 		) );
 
 		$options = wp_parse_args( $saved, $defaults );
@@ -534,6 +588,8 @@ class Featured_Content {
 
 		$output['hide-tag'] = isset( $input['hide-tag'] ) && $input['hide-tag'] ? 1 : 0;
 
+		$output['show-all'] = isset( $input['show-all'] ) && $input['show-all'] ? 1 : 0;
+
 		self::delete_transient();
 
 		return $output;
@@ -550,6 +606,17 @@ class Featured_Content {
 		if ( isset( $option['quantity'] ) ) {
 			unset( $option['quantity'] );
 			update_option( 'featured-content', $option );
+		}
+	}
+
+	public static function jetpack_update_featured_content_for_split_terms( $old_term_id, $new_term_id, $term_taxonomy_id, $taxonomy ) {
+		$featured_content_settings = get_option( 'featured-content', array() );
+
+		// Check to see whether the stored tag ID is the one that's just been split.
+		if ( isset( $featured_content_settings['tag-id'] ) && $old_term_id == $featured_content_settings['tag-id'] && 'post_tag' == $taxonomy ) {
+			// We have a match, so we swap out the old tag ID for the new one and resave the option.
+			$featured_content_settings['tag-id'] = $new_term_id;
+			update_option( 'featured-content', $featured_content_settings );
 		}
 	}
 }

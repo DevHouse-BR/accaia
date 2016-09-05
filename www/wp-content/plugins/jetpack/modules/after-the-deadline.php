@@ -7,6 +7,7 @@
  * Requires Connection: Yes
  * Auto Activate: Yes
  * Module Tags: Writing
+ * Additional Search Queries: after the deadline, afterthedeadline, spell, spellchecker, spelling, grammar, proofreading, style, language, cliche
  */
 
 if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
@@ -17,7 +18,8 @@ if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
 	}
 	add_filter( 'atd_http_post_timeout', 'AtD_http_post_timeout_action' );
 	function AtD_http_post_error_action( $code ) {
-		bump_stats_extras( 'atd-remote-error', $code );
+		/** This action is documented in modules/widgets/social-media-icons.php */
+		do_action( 'jetpack_bump_stats_extras', 'atd-remote-error', $code );
 	}
 	add_action( 'atd_http_post_error', 'AtD_http_post_error_action' );
 	function AtD_service_domain_action() {
@@ -63,7 +65,7 @@ include( dirname( __FILE__ ) . '/after-the-deadline/config-options.php' );
 include( dirname( __FILE__ ) . '/after-the-deadline/config-unignore.php' );
 include( dirname( __FILE__ ) . '/after-the-deadline/proxy.php' );
 
-define( 'ATD_VERSION', '20140527' );
+define( 'ATD_VERSION', '20150715' );
 
 /*
  * Display the AtD configuration options
@@ -128,7 +130,7 @@ function register_AtD_button( $buttons ) {
 function add_AtD_tinymce_plugin( $plugin_array ) {
 	$plugin = ATD_TINYMCE_4 ? 'plugin' : 'editor_plugin';
 
-	$plugin_array['AtD'] = plugins_url( 'after-the-deadline/tinymce/' . $plugin . '.js?v=' . ATD_VERSION, __FILE__ );
+	$plugin_array['AtD'] = add_query_arg( 'v', ATD_VERSION, plugins_url( 'after-the-deadline/tinymce/' . $plugin . '.js', __FILE__ ) );
 	return $plugin_array;
 }
 
@@ -138,6 +140,9 @@ function add_AtD_tinymce_plugin( $plugin_array ) {
 function AtD_change_mce_settings( $init_array ) {
 	if ( ! AtD_is_allowed() )
 		return $init_array;
+
+	if ( ! is_array( $init_array ) )
+		$init_array = array();
 
 	$user = wp_get_current_user();
 
@@ -253,6 +258,9 @@ function AtD_load_submit_check_javascripts() {
  * Check if a user is allowed to use AtD
  */
 function AtD_is_allowed() {
+	if ( ( defined( 'AtD_FORCED_ON' ) && AtD_FORCED_ON ) ) {
+		return true;
+	}
 	$user = wp_get_current_user();
 	if ( ! $user || $user->ID == 0 )
 		return;
@@ -286,6 +294,17 @@ function AtD_should_load_on_page() {
 		return true;
 	}
 
+	/**
+	 * Allows scripts to be loaded via AtD in admin.
+	 *
+	 * By default, AtD only enqueues JS on certain admin pages to reduce bloat. The filter allows additional pages to have AtD JS.
+	 *
+	 * @module after-the-deadline
+	 *
+	 * @since 1.2.3
+	 *
+	 * @param bool false Boolean to load or not load AtD scripts in admin.
+	 */
 	return apply_filters( 'atd_load_scripts', false );
 }
 

@@ -119,11 +119,16 @@
 
 			// Button style
 			if ( 'icon' === button_style ) {
-				$( '#live-preview ul.preview div span' ).html( '&nbsp;' ).parent().addClass( 'no-text' ); // Remove text label
+				$( '#live-preview ul.preview div span, .sharing-hidden .inner ul div span' ).html( '&nbsp;' ).parent().addClass( 'no-text' );
 				$( '#live-preview div.sharedaddy' ).addClass( 'sd-social-icon' );
 			} else if ( 'official' === button_style ) {
-				$( '#live-preview ul.preview .advanced' ).each( function( /*i*/ ) {
-					if ( !$( this ).hasClass( 'preview-press-this' ) && !$( this ).hasClass( 'preview-email' ) && !$( this ).hasClass( 'preview-print' ) && !$( this ).hasClass( 'share-custom' ) ) {
+				$( '#live-preview ul.preview .advanced, .sharing-hidden .inner ul .advanced' ).each( function( /*i*/ ) {
+					if ( !$( this ).hasClass( 'preview-press-this' ) &&
+						!$( this ).hasClass( 'preview-email' ) &&
+						!$( this ).hasClass( 'preview-print' ) &&
+						!$( this ).hasClass( 'preview-telegram' ) &&
+						!$( this ).hasClass( 'preview-jetpack-whatsapp' ) &&
+						!$( this ).hasClass( 'share-custom' ) ) {
 						$( this ).find( '.option a span' ).html( '' ).parent().removeClass( 'sd-button' ).parent().attr( 'class', 'option option-smart-on' );
 					}
 				} );
@@ -287,15 +292,15 @@
 		$( '.service' ).on( 'keydown', function ( e ) {
 
 			// Reposition if one of the directional keys is pressed
-		    switch ( e.keyCode ) {
-		        case 13: keyboardDragDrop( $( this ) ); break; // Enter
-		        case 32: keyboardDragDrop( $( this ) ); break; // Space
-		        case 37: keyboardChangeOrder( $( this ), 'left' ); break; // Left
-		        case 39: keyboardChangeOrder( $( this ), 'right' ); break; // Right
-		        default: return true; // Exit and bubble
-		    }
+			switch ( e.keyCode ) {
+				case 13: keyboardDragDrop( $( this ) ); break; // Enter
+				case 32: keyboardDragDrop( $( this ) ); break; // Space
+				case 37: keyboardChangeOrder( $( this ), 'left' ); break; // Left
+				case 39: keyboardChangeOrder( $( this ), 'right' ); break; // Right
+				default: return true; // Exit and bubble
+			}
 
-		    e.preventDefault();
+			e.preventDefault();
 		});
 
 		function keyboardChangeOrder( $this, dir ) {
@@ -346,7 +351,7 @@
 				// Add focus
 				nextSibling.next().focus();
 			}
-			
+
 			//Save changes
 			save_services();
 		}
@@ -370,7 +375,7 @@
 
 			// Move it to the appropriate area and add focus back to service
 			$( '.' + dropzone ).prepend( thisService ).find( 'li:first-child' ).focus();
-			
+
 			//Save changes
 			save_services();
 		}

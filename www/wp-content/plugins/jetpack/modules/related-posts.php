@@ -1,11 +1,16 @@
 <?php
 /**
  * Module Name: Related Posts
- * Module Description: Display links to your related content under posts and pages.
+ * Module Description: Display similar content.
+ * Jumpstart Description: Keep visitors engaged on your blog by highlighting relevant and new content at the bottom of each published post.
  * First Introduced: 2.9
  * Sort Order: 29
+ * Recommendation Order: 9
  * Requires Connection: Yes
  * Auto Activate: No
+ * Module Tags: Recommended
+ * Feature: Recommended, Jumpstart, Traffic
+ * Additional Search Queries: related, related posts
  */
 class Jetpack_RelatedPosts_Module {
 	/**
@@ -33,20 +38,6 @@ class Jetpack_RelatedPosts_Module {
 	 */
 	private function __construct() {
 		add_action( 'jetpack_module_loaded_related-posts', array( $this, 'action_on_load' ) );
-		add_action( 'jetpack_activate_module_related-posts', array( $this, 'action_on_activate' ) );
-	}
-
-	/**
-	 * This action triggers when module is activated.
-	 *
-	 * @uses self::_get_post_count_local, self::_get_post_count_cloud, Jetpack::init, Jetpack::sync_reindex_trigger
-	 * @return null
-	 */
-	public function action_on_activate() {
-		// Trigger reindex if we have a post count mismatch
-		if ( $this->_get_post_count_local() != $this->_get_post_count_cloud() ) {
-			Jetpack::init()->sync->reindex_trigger();
-		}
 	}
 
 	/**
@@ -63,9 +54,6 @@ class Jetpack_RelatedPosts_Module {
 			// Enable "Configure" button on module card
 			Jetpack::enable_module_configurable( __FILE__ );
 			Jetpack::module_configuration_load( __FILE__, array( $this, 'module_configuration_load' ) );
-
-			// Sync new posts
-			Jetpack_Sync::sync_posts( __FILE__ );
 		}
 	}
 
@@ -80,40 +68,6 @@ class Jetpack_RelatedPosts_Module {
 		exit;
 	}
 
-	private function _get_post_count_local() {
-		global $wpdb;
-		return (int) $wpdb->get_var(
-			"SELECT count(*)
-				FROM {$wpdb->posts}
-				WHERE post_status = 'publish' AND post_password = ''"
-		);
-	}
-
-	private function _get_post_count_cloud() {
-		$blog_id = Jetpack::init()->get_option( 'id' );
-
-		$body = array(
-			'size' => 1,
-		);
-
-		$response = wp_remote_post(
-			"https://public-api.wordpress.com/rest/v1/sites/$blog_id/search",
-			array(
-				'timeout' => 10,
-				'user-agent' => 'jetpack_related_posts',
-				'sslverify' => true,
-				'body' => $body,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return 0;
-		}
-
-		$results = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		return (int) $results['results']['total'];
-	}
 }
 
 // Do it.

@@ -22,33 +22,22 @@ class Tonesque {
 
 		$this->image_url = esc_url_raw( $image_url );
 		$this->image_url = trim( $this->image_url );
+		/**
+		 * Allows any image URL to be passed in for $this->image_url.
+		 *
+		 * @module theme-tools
+		 *
+		 * @since 2.5.0
+		 *
+		 * @param string $image_url The URL to any image
+		 */
 		$this->image_url = apply_filters( 'tonesque_image_url', $this->image_url );
 
 		$this->image_obj = self::imagecreatefromurl( $this->image_url );
 	}
 
 	public static function imagecreatefromurl( $image_url ) {
-	 	// Grab the extension
-		$file = strtolower( pathinfo( $image_url, PATHINFO_EXTENSION ) );
-		$file = explode( '?', $file );
-		$file = $file[ 0 ];
-
-		switch ( $file ) {
-			case 'gif' :
-				$image_obj = imagecreatefromgif( $image_url );
-				break;
-			case 'png' :
-				$image_obj = imagecreatefrompng( $image_url );
-				break;
-			case 'jpg' :
-			case 'jpeg' :
-				$image_obj = imagecreatefromjpeg( $image_url );
-				break;
-			default:
-				return false;
-		}
-
-		return $image_obj;
+		return imagecreatefromstring( file_get_contents( $image_url ) );
 	}
 
 	/**
